@@ -1,17 +1,17 @@
 import { FC, useEffect } from "react";
-import { useLocation, useNavigate, useParams } from "react-router"
+import { useLocation, useNavigate, useParams } from "react-router";
 import useSearchQueryParams from "../../../core/hooks/use-search-query-params.hook";
 import { useNewsAPIGetTopHeadlines } from "../../../core/api/news-api.api";
 import ArticleCard from "../../common/ArticleCard/ArticleCard";
 import { IOption } from "../../../core/model/option.model";
 import Pagination from "../../common/Pagination/Pagination";
+import SkeletonLoading from "./SkeletonLoading/SkeletonLoading";
 
 const sourcesOption: IOption[] = [];
 
 interface IListGrid {}
 
 const ListGrid: FC<IListGrid> = () => {
-
   const location = useLocation();
   const { dataSource, search, dateRange, category, sourceId } =
     useSearchQueryParams(location.search, sourcesOption);
@@ -33,10 +33,9 @@ const ListGrid: FC<IListGrid> = () => {
     refetch();
   }, [currentPage, dataSource, search, dateRange, category, sourceId, refetch]);
 
-
   let totalPages = 0;
-  
-  if(data && data.data.totalResults){
+
+  if (data && data.data.totalResults) {
     totalPages = data.data.totalResults;
   }
 
@@ -44,27 +43,35 @@ const ListGrid: FC<IListGrid> = () => {
   const searchParams = location.search;
 
   const onPageChange = (selected: number) => {
-    console.log('--nav')
+    console.log("--nav");
     navigate(`/pages/${selected}${searchParams}`);
-  }
+  };
 
   return (
     <section>
-      <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-[20px]">
-        {data?.data.articles.map((article) => (
-          <ArticleCard
-            description={article.description}
-            href={article.url}
-            image={article.urlToImage}
-            title={article.title}
-            key={article.url}
-            author={article.author}
-            date={article.publishedAt}
-            source={article.source.name}
-            category={""}
-          />
-        ))}
-      </div>
+      {isLoading ? (
+        <>
+          <SkeletonLoading />
+        </>
+      ) : (
+        <>
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-[20px]">
+            {data?.data.articles.map((article) => (
+              <ArticleCard
+                description={article.description}
+                href={article.url}
+                image={article.urlToImage}
+                title={article.title}
+                key={article.url}
+                author={article.author}
+                date={article.publishedAt}
+                source={article.source.name}
+                category={"politics"}
+              />
+            ))}
+          </div>
+        </>
+      )}
 
       <Pagination
         page={+currentPage}
