@@ -12,6 +12,7 @@ import { useNavigate } from "react-router";
 import useSearchQueryParams from "../../../core/hooks/use-search-query-params.hook";
 import { IInitialSearchValues } from "../../../core/model/initial-search-values.model";
 import { generateSearchQueryParams } from "../../../core/utils/helpers.util";
+import { EDataSouces } from "../../../core/enums/data-sources.enum";
 
 interface ISearchBar {}
 
@@ -68,7 +69,7 @@ const SearchBar: FC<ISearchBar> = ({}) => {
         onSubmit={onSubmit}
         enableReinitialize={true}
       >
-        {({}) => (
+        {({ setFieldValue, values }) => (
           <Form className="flex gap-[10px] flex-wrap items-center">
             <SelectOption
               isLoading={false}
@@ -90,6 +91,14 @@ const SearchBar: FC<ISearchBar> = ({}) => {
               name="category"
               label="Category"
               options={searchCategories}
+              onChange={() => {
+                if (
+                  values["dataSource"] &&
+                  values["dataSource"].value === EDataSouces.NEWS_API_ORG
+                ) {
+                  setFieldValue("sources", null);
+                }
+              }}
               isClearable
             />
             <SelectOption
@@ -97,6 +106,14 @@ const SearchBar: FC<ISearchBar> = ({}) => {
               placeholder="sources"
               name="sources"
               label="Sources"
+              onChange={() => {
+                if (
+                  values["dataSource"] &&
+                  values["dataSource"].value === EDataSouces.NEWS_API_ORG
+                ) {
+                  setFieldValue("category", null);
+                }
+              }}
               options={normalizeSourcesOptions}
               isClearable
             />

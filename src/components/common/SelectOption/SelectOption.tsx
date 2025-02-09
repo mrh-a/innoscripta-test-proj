@@ -9,7 +9,7 @@ interface IDateRangePicker {
   label: string;
   name: string;
   options: IOption[];
-  onChange?: (option: IOption) => {};
+  onChange?: (option: IOption) => void;
   placeholder?: string;
   isLoading?: boolean;
   isClearable?: boolean
