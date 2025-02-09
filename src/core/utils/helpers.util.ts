@@ -1,5 +1,7 @@
+import { Dispatch } from "react";
 import { IGetNewsParams } from "../model/get-news-params.model";
 import { IInitialSearchValues } from "../model/initial-search-values.model";
+import { IOption } from "../model/option.model";
 
 export const generateSearchQueryParams = (
   queryParams: URLSearchParams,
@@ -63,4 +65,40 @@ export const generateNewsAPIORGParams = (
   queryParams.append("apiKey", import.meta.env.VITE_NEWS_API_ORG_API_KEY);
 
   return queryParams;
+};
+
+export const saveFilter = (
+  values: IInitialSearchValues,
+  setSavedFilters: Dispatch<React.SetStateAction<IOption[]>>
+) => {
+  let queryParams = new URLSearchParams();
+  queryParams = generateSearchQueryParams(queryParams, values);
+  const filterQueryString = queryParams.toString();
+
+  const newSavedFilter: IOption = {
+    label: `Saved Filter ${new Date().toLocaleString()}`,
+    value: filterQueryString,
+  };
+
+  const existingSavedFilters = localStorage.getItem("savedFilters");
+  let filtersArray: IOption[] = existingSavedFilters
+    ? JSON.parse(existingSavedFilters)
+    : [];
+
+  filtersArray.push(newSavedFilter);
+  localStorage.setItem("savedFilters", JSON.stringify(filtersArray));
+  setSavedFilters(filtersArray);
+};
+
+export const removeFilter = (
+  filterToRemove: IOption,
+  setSavedFilters: Dispatch<React.SetStateAction<IOption[]>>
+) => {
+
+  const existingSavedFilters = localStorage.getItem("savedFilters");
+  let filtersArray: IOption[] = existingSavedFilters ? JSON.parse(existingSavedFilters) : [];
+  filtersArray = filtersArray.filter((filter: IOption) => filter.value !== filterToRemove.value);
+  
+  localStorage.setItem("savedFilters", JSON.stringify(filtersArray));
+  setSavedFilters(filtersArray);
 };

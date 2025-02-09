@@ -5,17 +5,30 @@ import Select from 'react-select';
 import { IOption } from '../../../core/model/option.model';
 import { Placeholder } from 'react-select/animated';
 
-interface IDateRangePicker {
+
+const DefaultOptionComponent = ({...props}) => {
+  const { data, innerRef, innerProps } = props;
+  return (
+    <div ref={innerRef} {...innerProps} className="p-2 cursor-pointer hover:bg-gray-200">
+      {data.label}
+    </div>
+  );
+};
+
+interface ISelectOption {
   label: string;
   name: string;
   options: IOption[];
   onChange?: (option: IOption) => void;
   placeholder?: string;
   isLoading?: boolean;
-  isClearable?: boolean
+  isClearable?: boolean;
+  CustomOptionComponent?: any;
+  className?: string;
+  onItemDelete?: (option: IOption) => void;
 }
 
-const SelectOption: FC<IDateRangePicker> = ({
+const SelectOption: FC<ISelectOption> = ({
   label,
   name,
   options,
@@ -23,6 +36,9 @@ const SelectOption: FC<IDateRangePicker> = ({
   placeholder,
   isLoading,
   isClearable,
+  CustomOptionComponent,
+  className,
+  onItemDelete
 }: any) => {
   return (
     <div>
@@ -33,7 +49,7 @@ const SelectOption: FC<IDateRangePicker> = ({
             <div>
               <Select
                 placeholder={placeholder ? placeholder : "select ..."}
-                className="mt-[7px] h-[40px] min-w-[200px]"
+                className={`mt-[7px] h-[40px] min-w-[200px] ${className}`}
                 {...field}
                 options={options}
                 onChange={(selected: IOption | null) => {
@@ -43,6 +59,17 @@ const SelectOption: FC<IDateRangePicker> = ({
                 onBlur={field.onBlur}
                 isLoading={isLoading}
                 isClearable={isClearable}
+                components={{
+                  Option: (props) =>
+                    CustomOptionComponent ? (
+                      <CustomOptionComponent
+                        onItemDelete={onItemDelete}
+                        {...props}
+                      />
+                    ) : (
+                      <DefaultOptionComponent {...props} />
+                    ),
+                }}
               />
               <ErrorMessage name={name} component="div" className="error" />
             </div>

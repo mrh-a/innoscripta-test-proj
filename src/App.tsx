@@ -2,7 +2,7 @@ import { Route, Routes } from 'react-router';
 import { MainRoutes } from './core/config/routes.config';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Header from "./components/Header/Header";
-import SearchBar from './components/HomePageContainer/SearchBar/SearchBar';
+import { ToastContainer } from 'react-toastify';
 
 function App() {
 
@@ -10,6 +10,7 @@ function App() {
 
   return (
     <div className="">
+      <ToastContainer />
       <div className="container mx-auto h-[2000px] py-[10px] shadow">
         <QueryClientProvider client={queryClient}>
           <Header />

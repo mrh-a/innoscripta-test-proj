@@ -11,8 +11,11 @@ import { dataSources } from "../../../core/data/data-sources.data";
 import { useNavigate } from "react-router";
 import useSearchQueryParams from "../../../core/hooks/use-search-query-params.hook";
 import { IInitialSearchValues } from "../../../core/model/initial-search-values.model";
-import { generateSearchQueryParams } from "../../../core/utils/helpers.util";
+import { generateSearchQueryParams, removeFilter, saveFilter } from "../../../core/utils/helpers.util";
 import { EDataSouces } from "../../../core/enums/data-sources.enum";
+import { IOption } from "../../../core/model/option.model";
+import SavedSearchItemWithRemove from "./SavedSearchItemWithRemove/SavedSearchItemWithRemove";
+import { toast } from "react-toastify";
 
 interface ISearchBar {}
 
@@ -20,6 +23,7 @@ const SearchBar: FC<ISearchBar> = ({}) => {
   
   const navigate = useNavigate()
 
+  const [savedFilters, setSavedFilters] = useState<IOption[]>([]);
   const [initialValues, setInitialValues] = useState<IInitialSearchValues>({
     dataSource: dataSources[0],
     search: "",
@@ -62,6 +66,19 @@ const SearchBar: FC<ISearchBar> = ({}) => {
     navigate(`?${queryParams.toString()}`);
   }; 
 
+  useEffect(() => {
+    const savedFiltersStr = localStorage.getItem("savedFilters");
+    if (savedFiltersStr) {
+      setSavedFilters(JSON.parse(savedFiltersStr));
+    }
+  }, []);
+
+  const handleSavedSearchChange = (selectedOption: IOption | null) => {
+    if (selectedOption) {
+      navigate(`/?${selectedOption.value}`);
+    }
+  };
+
   return (
     <section className="flex justify-start  mt-[20px]">
       <Formik<IInitialSearchValues>
@@ -70,58 +87,93 @@ const SearchBar: FC<ISearchBar> = ({}) => {
         enableReinitialize={true}
       >
         {({ setFieldValue, values }) => (
-          <Form className="flex gap-[10px] flex-wrap items-center">
-            <SelectOption
-              isLoading={false}
-              placeholder="data source"
-              name="dataSource"
-              label="Data Source"
-              options={dataSources}
-              isClearable={false}
-            />
-            <TextInput
-              name="search"
-              label="Search"
-              placeholder="search ..."
-              inputClassName="min-w-[450px]"
-            />
-            <DateRangePicker label="Date" name="dateRange" />
-            <SelectOption
-              placeholder="category"
-              name="category"
-              label="Category"
-              options={searchCategories}
-              onChange={() => {
-                if (
-                  values["dataSource"] &&
-                  values["dataSource"].value === EDataSouces.NEWS_API_ORG
-                ) {
-                  setFieldValue("sources", null);
-                }
-              }}
-              isClearable
-            />
-            <SelectOption
-              isLoading={isLoading}
-              placeholder="sources"
-              name="sources"
-              label="Sources"
-              onChange={() => {
-                if (
-                  values["dataSource"] &&
-                  values["dataSource"].value === EDataSouces.NEWS_API_ORG
-                ) {
-                  setFieldValue("category", null);
-                }
-              }}
-              options={normalizeSourcesOptions}
-              isClearable
-            />
-            <Button
-              className="mt-[29px]"
-              label="Search"
-              ariaLabel="Submit Search Form"
-            />
+          <Form>
+            <div className="flex gap-[10px] flex-wrap items-center">
+              <SelectOption
+                isLoading={false}
+                placeholder="data source"
+                name="dataSource"
+                label="Data Source"
+                options={dataSources}
+                isClearable={false}
+              />
+              <TextInput
+                name="search"
+                label="Search"
+                placeholder="search ..."
+                inputClassName="min-w-[450px]"
+              />
+              <DateRangePicker label="Date" name="dateRange" />
+              <SelectOption
+                placeholder="category"
+                name="category"
+                label="Category"
+                options={searchCategories}
+                onChange={() => {
+                  if (
+                    values["dataSource"] &&
+                    values["dataSource"].value === EDataSouces.NEWS_API_ORG
+                  ) {
+                    setFieldValue("sources", null);
+                  }
+                }}
+                isClearable
+              />
+              <SelectOption
+                isLoading={isLoading}
+                placeholder="sources"
+                name="sources"
+                label="Sources"
+                onChange={() => {
+                  if (
+                    values["dataSource"] &&
+                    values["dataSource"].value === EDataSouces.NEWS_API_ORG
+                  ) {
+                    setFieldValue("category", null);
+                  }
+                }}
+                options={normalizeSourcesOptions}
+                isClearable
+              />
+              <Button
+                className="mt-[29px]"
+                label="Search"
+                ariaLabel="Submit Search Form"
+              />
+            </div>
+            <div className="flex gap-[10px] flex-wrap items-center mt-[10px]">
+              <SelectOption
+                isLoading={isLoading}
+                placeholder="select ..."
+                name="savedSearch"
+                label="Saved Search"
+                className="min-w-[350px]"
+                onChange={(opt: IOption) => {
+                  handleSavedSearchChange(opt);
+                }}
+                options={savedFilters}
+                isClearable
+                CustomOptionComponent={SavedSearchItemWithRemove}
+                onItemDelete={(opt: any) => {
+                  removeFilter(opt, setSavedFilters);
+                  toast.success("Item Successfully Removed.", {
+                    position: "top-center",
+                  });
+                }}
+              />
+              <Button
+                type="button"
+                className="mt-[29px]"
+                label="Save Search"
+                ariaLabel="Save current filters"
+                onClick={() => {
+                  saveFilter(values, setSavedFilters);
+                  toast.success("Item Successfully Saved.", {
+                    position: "top-center",
+                  });
+                }}
+              />
+            </div>
           </Form>
         )}
       </Formik>
