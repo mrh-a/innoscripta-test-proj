@@ -1,5 +1,5 @@
 import { FC, useEffect } from "react";
-import { useLocation, useParams } from "react-router"
+import { useLocation, useNavigate, useParams } from "react-router"
 import useSearchQueryParams from "../../../core/hooks/use-search-query-params.hook";
 import { useNewsAPIGetTopHeadlines } from "../../../core/api/news-api.api";
 import ArticleCard from "../../common/ArticleCard/ArticleCard";
@@ -16,7 +16,7 @@ const ListGrid: FC<IListGrid> = () => {
   const { dataSource, search, dateRange, category, sourceId } =
     useSearchQueryParams(location.search, sourcesOption);
 
-  const { page: pageParam } = useParams<{ page: string }>();
+  const { id: pageParam } = useParams<{ id: string }>();
   const currentPage = pageParam ? pageParam : "1";
 
   const { data, isLoading, refetch } = useNewsAPIGetTopHeadlines({
@@ -31,7 +31,7 @@ const ListGrid: FC<IListGrid> = () => {
 
   useEffect(() => {
     refetch();
-  }, [dataSource, search, dateRange, category, sourceId, refetch]);
+  }, [currentPage, dataSource, search, dateRange, category, sourceId, refetch]);
 
 
   let totalPages = 0;
@@ -40,8 +40,12 @@ const ListGrid: FC<IListGrid> = () => {
     totalPages = data.data.totalResults;
   }
 
+  const navigate = useNavigate();
+  const searchParams = location.search;
+
   const onPageChange = (selected: number) => {
-    console.log("--selected--", selected);
+    console.log('--nav')
+    navigate(`/pages/${selected}${searchParams}`);
   }
 
   return (

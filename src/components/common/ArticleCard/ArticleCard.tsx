@@ -29,8 +29,8 @@ const ArticleCard: FC<IArticleCard> = ({
     <div className="max-w-sm bg-white border border-gray-200 rounded-lg">
       <Link to={href} target="_blank">
         <img
-          className="rounded-t-lg w-full h-[200px]"
-          src={image}
+          className="rounded-t-lg w-full h-[200px] object-cover"
+          src={image ? image : "/default-svp_news.jpg"}
           alt={title}
         />
       </Link>

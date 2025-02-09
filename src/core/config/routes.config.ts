@@ -1,10 +1,9 @@
 import { FC } from "react"
 import HomePage from "../../pages/HomePage/HomePage"
-import NewsDetails from "../../pages/NewsDetails/NewsDetails";
 
 export const GlobalRoute  = {
     Home: "/",
-    NewsDetails: "/news/:id"
+    HomePaginated: "/pages/:id"
 }
 
 export const MainRoutes: { route: string; component: FC }[] = [
@@ -13,7 +12,7 @@ export const MainRoutes: { route: string; component: FC }[] = [
     component: HomePage,
   },
   {
-    route: GlobalRoute.NewsDetails,
-    component: NewsDetails,
+    route: GlobalRoute.HomePaginated,
+    component: HomePage,
   },
 ];
