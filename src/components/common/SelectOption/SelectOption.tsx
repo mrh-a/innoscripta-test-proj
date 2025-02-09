@@ -3,8 +3,6 @@ import { FC } from "react";
 import "react-datepicker/dist/react-datepicker.css";
 import Select from 'react-select';
 import { IOption } from '../../../core/model/option.model';
-import { Placeholder } from 'react-select/animated';
-
 
 const DefaultOptionComponent = ({...props}) => {
   const { data, innerRef, innerProps } = props;

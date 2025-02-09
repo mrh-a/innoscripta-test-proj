@@ -1,7 +1,6 @@
 import { FC } from "react";
 import SearchBar from "./SearchBar/SearchBar";
 import ListGrid from "./ListGrid/ListGrid";
-import { useParams } from "react-router";
 
 interface IHomePageContainer {}
 

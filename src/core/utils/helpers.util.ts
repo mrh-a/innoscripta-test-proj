@@ -5,6 +5,7 @@ import { IOption } from "../model/option.model";
 import { EDataSouces } from "../enums/data-sources.enum";
 import { INews, INewsResponse } from "../model/news.model";
 import { IGuardianNewsResponse } from "../model/guardian.model";
+import { INYTimesNewsResponse } from "../model/ny-times.model";
 
 export const generateSearchQueryParams = (
   queryParams: URLSearchParams,
@@ -89,6 +90,34 @@ export const generateGuardianParams = (
   return queryParams;
 };
 
+export const generateNYTimesParams = (
+  queryParams: URLSearchParams,
+  params: IGetNewsParams
+) => {
+  if (params.page) {
+    queryParams.append("page", (+params.page - 1).toString());
+  } else {
+    queryParams.append("page", "0");
+  }
+
+  if (params.search) {
+    queryParams.append("q", params.search);
+  }
+  if (params.from) {
+    queryParams.append("begin_date", params.from);
+  }
+  if (params.to) {
+    queryParams.append("end_date", params.to);
+  }
+  if (params.sources) {
+    queryParams.append("fq", `section_name("${params.sources}")`);
+  }
+
+  queryParams.append("api-key", import.meta.env.VITE_NYTIMES_API_KEY);
+
+  return queryParams;
+};
+
 export const saveFilter = (
   values: IInitialSearchValues,
   setSavedFilters: Dispatch<React.SetStateAction<IOption[]>>
@@ -129,9 +158,9 @@ export const removeFilter = (
 };
 
 // We are considering the NEWS API ORG response as the default and normalizing the Guardian and NYTimes response.
-export const getNormalizedTotalResult = (
+export const getNormalizedResult = (
   dataSource: string,
-  data: INewsResponse & IGuardianNewsResponse
+  data: INewsResponse & IGuardianNewsResponse & INYTimesNewsResponse
 ) => {
   let normalizedData: INewsResponse = {
     articles: [],
@@ -158,6 +187,26 @@ export const getNormalizedTotalResult = (
     normalizedData.articles = articles;
 
     return normalizedData;
+  } else if (dataSource === EDataSouces.NYTIMES) {
+    normalizedData.status = "ok";
+    normalizedData.totalResults = data.response.meta.hits;
+
+    let articles: INews[] = data.response.docs.map((news) => ({
+      author: news.byline?.original || "",
+      content: news.lead_paragraph || "",
+      description: news.abstract || "",
+      publishedAt: news.pub_date,
+      source: { id: news.section_name, name: news.section_name },
+      title: news.headline.main,
+      url: news.web_url,
+      urlToImage: news.multimedia?.length
+        ? `https://www.nytimes.com/${news.multimedia[0].url}`
+        : "",
+    }));
+
+    normalizedData.articles = articles;
+
+    return normalizedData;
   }
 };
 
@@ -169,6 +218,9 @@ export const getSourceSelectOptionLabel = (dataSource: string) => {
     case EDataSouces.NEWS_API_ORG:
       return "Sources";
 
+    case EDataSouces.NYTIMES:
+      return "Section";
+
     default:
       return "Sources";
   }
@@ -177,7 +229,8 @@ export const getSourceSelectOptionLabel = (dataSource: string) => {
 export const getSourceSelectOptions = (
   dataSource: string | null,
   newsApiData: IOption[],
-  guardianData: IOption[]
+  guardianData: IOption[],
+  nytimesOptions: IOption[]
 ) => {
   switch (dataSource) {
     case EDataSouces.GUARDIAN:
@@ -185,6 +238,9 @@ export const getSourceSelectOptions = (
 
     case EDataSouces.NEWS_API_ORG:
       return newsApiData;
+
+    case EDataSouces.NYTIMES:
+      return nytimesOptions;
 
     default:
       return newsApiData;

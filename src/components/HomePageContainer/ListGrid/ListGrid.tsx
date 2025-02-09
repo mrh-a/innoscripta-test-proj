@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect } from "react";
 import { useLocation, useNavigate, useParams } from "react-router";
 import useSearchQueryParams from "../../../core/hooks/use-search-query-params.hook";
 import { useNewsAPIGetTopHeadlines } from "../../../core/api/news-api.api";
