@@ -11,11 +11,13 @@ import { dataSources } from "../../../core/data/data-sources.data";
 import { useNavigate } from "react-router";
 import useSearchQueryParams from "../../../core/hooks/use-search-query-params.hook";
 import { IInitialSearchValues } from "../../../core/model/initial-search-values.model";
-import { generateSearchQueryParams, removeFilter, saveFilter } from "../../../core/utils/helpers.util";
+import { generateSearchQueryParams, getSourceSelectOptionLabel, getSourceSelectOptions, removeFilter, saveFilter } from "../../../core/utils/helpers.util";
 import { EDataSouces } from "../../../core/enums/data-sources.enum";
 import { IOption } from "../../../core/model/option.model";
 import SavedSearchItemWithRemove from "./SavedSearchItemWithRemove/SavedSearchItemWithRemove";
 import { toast } from "react-toastify";
+import { useGuardianGetSections } from "../../../core/api/guardian-sections.api";
+import { IGuardianSection } from "../../../core/model/guardian-section.model";
 
 interface ISearchBar {}
 
@@ -33,6 +35,8 @@ const SearchBar: FC<ISearchBar> = ({}) => {
   });
 
   const { isLoading, data } = useNewsAPIGetSources();
+  const { isLoading: sectionsIsLoading, data: sectionsData } =
+    useGuardianGetSections();
 
   const normalizeSourcesOptions = useMemo(() => {
     if (data && data.data.status === "ok") {
@@ -43,12 +47,31 @@ const SearchBar: FC<ISearchBar> = ({}) => {
 
       return newSource;
     }
-
     return [];
   }, [data]);
 
+  const normalizeSectionsOptions = useMemo(() => {
+    if (sectionsData && sectionsData.data.response.status === "ok") {
+      const newSource = sectionsData.data.response.results.map(
+        (data: IGuardianSection) => ({
+          label: data.webTitle,
+          value: data.id,
+        })
+      );
+
+      return newSource;
+    }
+    return [];
+  }, [sectionsData]);
+
+
+  console.log("--normalizeSectionsOptions--", normalizeSectionsOptions);
   const { dataSource, search, dateRange, category, sources } =
-    useSearchQueryParams(location.search, normalizeSourcesOptions);
+    useSearchQueryParams(
+      location.search,
+      normalizeSourcesOptions,
+      normalizeSectionsOptions
+    );
 
   useEffect(() => {
     setInitialValues({
@@ -63,7 +86,7 @@ const SearchBar: FC<ISearchBar> = ({}) => {
   const onSubmit = (values: IInitialSearchValues) => {
     let queryParams = new URLSearchParams();
     queryParams = generateSearchQueryParams(queryParams, values);
-    navigate(`?${queryParams.toString()}`);
+    navigate(`/?${queryParams.toString()}`);
   }; 
 
   useEffect(() => {
@@ -95,6 +118,7 @@ const SearchBar: FC<ISearchBar> = ({}) => {
                 name="dataSource"
                 label="Data Source"
                 options={dataSources}
+                onChange={() => setFieldValue("sources", null)}
                 isClearable={false}
               />
               <TextInput
@@ -104,26 +128,30 @@ const SearchBar: FC<ISearchBar> = ({}) => {
                 inputClassName="min-w-[450px]"
               />
               <DateRangePicker label="Date" name="dateRange" />
-              <SelectOption
-                placeholder="category"
-                name="category"
-                label="Category"
-                options={searchCategories}
-                onChange={() => {
-                  if (
-                    values["dataSource"] &&
-                    values["dataSource"].value === EDataSouces.NEWS_API_ORG
-                  ) {
-                    setFieldValue("sources", null);
-                  }
-                }}
-                isClearable
-              />
+              {values["dataSource"].value === EDataSouces.NEWS_API_ORG && (
+                <SelectOption
+                  placeholder="category"
+                  name="category"
+                  label="Category"
+                  options={searchCategories}
+                  onChange={() => {
+                    if (
+                      values["dataSource"] &&
+                      values["dataSource"].value === EDataSouces.NEWS_API_ORG
+                    ) {
+                      setFieldValue("sources", null);
+                    }
+                  }}
+                  isClearable
+                />
+              )}
               <SelectOption
                 isLoading={isLoading}
-                placeholder="sources"
+                placeholder={getSourceSelectOptionLabel(
+                  values["dataSource"].value
+                )}
                 name="sources"
-                label="Sources"
+                label={getSourceSelectOptionLabel(values["dataSource"].value)}
                 onChange={() => {
                   if (
                     values["dataSource"] &&
@@ -132,7 +160,11 @@ const SearchBar: FC<ISearchBar> = ({}) => {
                     setFieldValue("category", null);
                   }
                 }}
-                options={normalizeSourcesOptions}
+                options={getSourceSelectOptions(
+                  values["dataSource"].value,
+                  normalizeSourcesOptions,
+                  normalizeSectionsOptions
+                )}
                 isClearable
               />
               <Button
@@ -143,7 +175,7 @@ const SearchBar: FC<ISearchBar> = ({}) => {
             </div>
             <div className="flex gap-[10px] flex-wrap items-center mt-[10px]">
               <SelectOption
-                isLoading={isLoading}
+                isLoading={false}
                 placeholder="select ..."
                 name="savedSearch"
                 label="Saved Search"

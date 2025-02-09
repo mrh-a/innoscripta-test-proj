@@ -1,11 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
-import { Http } from "./interceptors/http.interceptor";
 import { AxiosResponse } from "axios";
+import { Http } from "./interceptors/http.interceptor";
 import { INewsApiSource } from "../model/news-api-source.model";
 import useSearchQueryParams from "../hooks/use-search-query-params.hook";
 import { EDataSouces } from "../enums/data-sources.enum";
-import { generateNewsAPIORGParams } from "../utils/helpers.util";
+import { generateGuardianParams, generateNewsAPIORGParams } from "../utils/helpers.util";
 import { INewsResponse } from "../model/news.model";
+import { IGuardianNewsResponse } from "../model/guardian.model";
+import { getNormalizedTotalResult } from "../utils/helpers.util"; // import your normalization function
 
 export const NewsAPIGetSources = (): Promise<AxiosResponse<INewsApiSource>> => {
   return Http.get(
@@ -17,7 +19,7 @@ export const NewsAPIGetSources = (): Promise<AxiosResponse<INewsApiSource>> => {
 
 export const NewsAPIGetTopHeadlines = (
   params: string
-): Promise<AxiosResponse<INewsResponse>> => {
+): Promise<AxiosResponse<INewsResponse & IGuardianNewsResponse>> => {
   return Http.get(`${params}`);
 };
 
@@ -25,6 +27,8 @@ export const useNewsAPIGetSources = () =>
   useQuery({
     queryKey: ["NewsAPIGetSources"],
     queryFn: NewsAPIGetSources,
+    retry: 1,
+    refetchOnWindowFocus: false,
   });
 
 export const useNewsAPIGetTopHeadlines = ({
@@ -53,8 +57,23 @@ export const useNewsAPIGetTopHeadlines = ({
           category: category?.value,
           search,
           sources: sourceId,
-          from: dateRange.startDate?.toDateString(),
-          to: dateRange.endDate?.toDateString(),
+          from: dateRange.startDate?.toISOString().split("T")[0],
+          to: dateRange.endDate?.toISOString().split("T")[0],
+        });
+      break;
+
+    case EDataSouces.GUARDIAN:
+      params =
+        import.meta.env.VITE_GURADIAN_BASE_URL +
+        "?" +
+        generateGuardianParams(queryParams, {
+          page,
+          pageSize,
+          category: category?.value,
+          search,
+          sources: sourceId,
+          from: dateRange.startDate?.toISOString().split("T")[0],
+          to: dateRange.endDate?.toISOString().split("T")[0],
         });
       break;
 
@@ -63,7 +82,17 @@ export const useNewsAPIGetTopHeadlines = ({
   }
 
   return useQuery({
-    queryKey: ["NewsAPIGetTopHeadlines"],
+    queryKey: ["NewsAPIGetTopHeadlines", { dataSource }],
     queryFn: () => NewsAPIGetTopHeadlines(params),
+    select: (
+      response: AxiosResponse<INewsResponse & IGuardianNewsResponse>
+    ) => {
+      return getNormalizedTotalResult(
+        dataSource.value || EDataSouces.NEWS_API_ORG,
+        response.data
+      );
+    },
+    retry: false,
+    refetchOnWindowFocus: false,
   });
 };

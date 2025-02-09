@@ -3,10 +3,16 @@ import { searchCategories } from "../data/categories.data";
 import { IOption } from "../model/option.model";
 
 import { useMemo } from "react";
+import { EDataSouces } from "../enums/data-sources.enum";
 
-const useSearchQueryParams = (query: string, sourcesOptions: IOption[]) => {
+const useSearchQueryParams = (
+  query: string,
+  sourcesOptions: IOption[] = [],
+  sectionOptions: IOption[] = []
+) => {
   const params = new URLSearchParams(query);
 
+  console.log("sectionOptions--", sectionOptions);
   const dataSourceParam = params.get("dataSource");
   const searchParam = params.get("search");
   const dateRangeParam = params.get("dateRange");
@@ -24,12 +30,18 @@ const useSearchQueryParams = (query: string, sourcesOptions: IOption[]) => {
   return useMemo(() => {
     return {
       dataSource:
-        dataSources.find((ds) => ds.value === dataSourceParam) || dataSources[0],
+        dataSources.find((ds) => ds.value === dataSourceParam) ||
+        dataSources[0],
       search: searchParam || "",
       dateRange: { startDate, endDate },
       category:
         searchCategories.find((cat) => cat.value === categoryParam) || null,
-      sources: sourcesOptions.find((src) => src.value === sourcesParam) || null,
+      sources:
+        dataSourceParam === EDataSouces.NEWS_API_ORG
+          ? sourcesOptions.find((src) => src.value === sourcesParam) || null
+          : dataSourceParam === EDataSouces.GUARDIAN
+          ? sectionOptions.find((src) => src.value === sourcesParam) || null
+          : null,
       sourceId: sourcesParam,
     };
   }, [
@@ -38,7 +50,7 @@ const useSearchQueryParams = (query: string, sourcesOptions: IOption[]) => {
     dateRangeParam,
     categoryParam,
     sourcesParam,
-    sourcesOptions
+    sourcesOptions,
   ]);
 };
 
