@@ -18,6 +18,7 @@ import SavedSearchItemWithRemove from "./SavedSearchItemWithRemove/SavedSearchIt
 import { toast } from "react-toastify";
 import { useGuardianGetSections } from "../../../core/api/guardian-sections.api";
 import { IGuardianSection } from "../../../core/model/guardian-section.model";
+import { nyTimesSections } from "../../../core/data/nytimes-sections.data";
 
 interface ISearchBar {}
 
@@ -35,8 +36,7 @@ const SearchBar: FC<ISearchBar> = ({}) => {
   });
 
   const { isLoading, data } = useNewsAPIGetSources();
-  const { isLoading: sectionsIsLoading, data: sectionsData } =
-    useGuardianGetSections();
+  const { data: sectionsData } = useGuardianGetSections();
 
   const normalizeSourcesOptions = useMemo(() => {
     if (data && data.data.status === "ok") {
@@ -163,7 +163,8 @@ const SearchBar: FC<ISearchBar> = ({}) => {
                 options={getSourceSelectOptions(
                   values["dataSource"].value,
                   normalizeSourcesOptions,
-                  normalizeSectionsOptions
+                  normalizeSectionsOptions,
+                  nyTimesSections
                 )}
                 isClearable
               />

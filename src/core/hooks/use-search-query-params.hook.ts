@@ -4,6 +4,7 @@ import { IOption } from "../model/option.model";
 
 import { useMemo } from "react";
 import { EDataSouces } from "../enums/data-sources.enum";
+import { nyTimesSections } from "../data/nytimes-sections.data";
 
 const useSearchQueryParams = (
   query: string,
@@ -41,6 +42,8 @@ const useSearchQueryParams = (
           ? sourcesOptions.find((src) => src.value === sourcesParam) || null
           : dataSourceParam === EDataSouces.GUARDIAN
           ? sectionOptions.find((src) => src.value === sourcesParam) || null
+          : dataSourceParam === EDataSouces.NYTIMES
+          ? nyTimesSections.find((src) => src.value === sourcesParam) || null
           : null,
       sourceId: sourcesParam,
     };
