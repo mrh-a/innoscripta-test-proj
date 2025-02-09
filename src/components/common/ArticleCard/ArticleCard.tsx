@@ -36,11 +36,13 @@ const ArticleCard: FC<IArticleCard> = ({
       </Link>
       <div className="p-5">
         <div className="flex justify-between">
-          <span className="block text-[12px] ">
-            {publishedAt.toDateString()}
-          </span>
-          <span className="block text-[12px] ">{source}</span>
-          <span className="block text-[12px] ">{category}</span>
+          {publishedAt && (
+            <span className="block text-[12px] ">
+              {publishedAt.toDateString()}
+            </span>
+          )}
+          {source && <span className="block text-[12px] ">{source}</span>}
+          {category && <span className="block text-[12px] ">{category}</span>}
         </div>
         <Link to={href} target="_blank">
           <h2 className="mb-2 text-xl font-bold tracking-tight text-gray-900 h-[85px] overflow-hidden text-ellipsis line-clamp-3">

@@ -61,7 +61,7 @@ const ListGrid: FC<IListGrid> = () => {
             author={article.author}
             date={article.publishedAt}
             source={article.source.name}
-            category={"politics"}
+            category={""}
           />
         ))}
       </div>
