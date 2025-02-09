@@ -48,6 +48,7 @@ const SelectOption: FC<ISelectOption> = ({
           return (
             <div>
               <Select
+                aria-label={label}
                 placeholder={placeholder ? placeholder : "select ..."}
                 className={`mt-[7px] h-[40px] min-w-[200px] ${className}`}
                 {...field}

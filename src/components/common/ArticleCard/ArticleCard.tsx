@@ -2,14 +2,14 @@ import { FC } from "react";
 import { Link } from "react-router";
 
 interface IArticleCard {
-  title: string
-  description: string
-  image: string
-  href: string
-  author: string
-  source: string
-  date: string
-  category: string
+  title: string;
+  description: string;
+  image: string;
+  href: string;
+  author: string;
+  source: string;
+  date: string;
+  category: string;
 }
 
 const ArticleCard: FC<IArticleCard> = ({
@@ -22,13 +22,13 @@ const ArticleCard: FC<IArticleCard> = ({
   category,
   date,
 }) => {
-
   const publishedAt = new Date(date);
 
   return (
     <div className="max-w-sm bg-white border border-gray-200 rounded-lg">
-      <Link to={href} target="_blank">
+      <Link to={href} target="_blank" aria-label={`Read article: ${title}`}>
         <img
+          fetchPriority="high"
           className="rounded-t-lg w-full h-[200px] object-cover"
           src={image ? image : "/default-svp_news.jpg"}
           alt={title}
@@ -37,12 +37,10 @@ const ArticleCard: FC<IArticleCard> = ({
       <div className="p-5">
         <div className="flex justify-between">
           {publishedAt && (
-            <span className="block text-[12px] ">
-              {publishedAt.toDateString()}
-            </span>
+            <span className="block text-[12px]">{publishedAt.toDateString()}</span>
           )}
-          {source && <span className="block text-[12px] ">{source}</span>}
-          {category && <span className="block text-[12px] ">{category}</span>}
+          {source && <span className="block text-[12px]">{source}</span>}
+          {category && <span className="block text-[12px]">{category}</span>}
         </div>
         <Link to={href} target="_blank">
           <h2 className="mb-2 text-xl font-bold tracking-tight text-gray-900 h-[85px] overflow-hidden text-ellipsis line-clamp-3">
@@ -52,7 +50,7 @@ const ArticleCard: FC<IArticleCard> = ({
         <p className="mb-3 font-normal text-gray-700 h-[100px] overflow-hidden text-ellipsis line-clamp-4">
           {description}
         </p>
-        <div></div>
+
         <div className="flex justify-between items-center">
           <Link
             to={href}
@@ -82,6 +80,5 @@ const ArticleCard: FC<IArticleCard> = ({
     </div>
   );
 };
-
 
 export default ArticleCard;
