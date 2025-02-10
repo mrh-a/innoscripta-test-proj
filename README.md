@@ -3,6 +3,7 @@
 
 ## Prerequisites
 - Make sure you have [Docker installed](https://docs.docker.com/get-docker/) on your machine.
+- After installing Docker, make sure it it running on your machine.
 
 ## Setup Guide
 
