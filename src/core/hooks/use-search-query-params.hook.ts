@@ -13,7 +13,6 @@ const useSearchQueryParams = (
 ) => {
   const params = new URLSearchParams(query);
 
-  console.log("sectionOptions--", sectionOptions);
   const dataSourceParam = params.get("dataSource");
   const searchParam = params.get("search");
   const dateRangeParam = params.get("dateRange");

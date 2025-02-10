@@ -5,7 +5,6 @@ import ListGrid from "./ListGrid/ListGrid";
 interface IHomePageContainer {}
 
 const HomePageContainer: FC<IHomePageContainer> = ({}) => {
-
   return (
     <div>
       <SearchBar />

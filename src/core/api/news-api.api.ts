@@ -16,7 +16,7 @@ import { INYTimesNewsResponse } from "../model/ny-times.model";
 
 export const NewsAPIGetSources = (): Promise<AxiosResponse<INewsApiSource>> => {
   return Http.get(
-    `https://newsapi.org/v2/top-headlines/sources?apiKey=${
+    `${import.meta.env.VITE_NEWS_API_ORG_BASE_URL}/sources?apiKey=${
       import.meta.env.VITE_NEWS_API_ORG_API_KEY
     }`
   );
@@ -72,6 +72,7 @@ export const useNewsAPIGetTopHeadlines = ({
     case EDataSouces.GUARDIAN:
       params =
         import.meta.env.VITE_GURADIAN_BASE_URL +
+        "/search" +
         "?" +
         generateGuardianParams(queryParams, {
           page,

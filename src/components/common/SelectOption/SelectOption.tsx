@@ -23,6 +23,7 @@ interface ISelectOption {
   isClearable?: boolean;
   CustomOptionComponent?: any;
   className?: string;
+  containerClassName?: string;
   onItemDelete?: (option: IOption) => void;
 }
 
@@ -36,19 +37,20 @@ const SelectOption: FC<ISelectOption> = ({
   isClearable,
   CustomOptionComponent,
   className,
-  onItemDelete
+  onItemDelete,
+  containerClassName,
 }: any) => {
   return (
-    <div>
+    <div className={`sm:w-[200px] w-full ${containerClassName}`}>
       <label htmlFor={name}>{label}</label>
       <Field name={name}>
         {({ field, form }: any) => {
           return (
-            <div>
+            <div className={`w-full`}>
               <Select
                 aria-label={label}
                 placeholder={placeholder ? placeholder : "select ..."}
-                className={`mt-[7px] h-[40px] min-w-[200px] ${className}`}
+                className={`mt-[7px] h-[40px] ${className}`}
                 {...field}
                 options={options}
                 onChange={(selected: IOption | null) => {

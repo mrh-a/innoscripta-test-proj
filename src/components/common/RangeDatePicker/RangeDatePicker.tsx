@@ -16,14 +16,15 @@ const DateRangePicker: FC<IDateRangePicker> = ({
   ...props
 }: any) => {
   return (
-    <div>
+    <div className='sm:w-[200px] w-full'>
       <label htmlFor={name}>{label}</label>
       <Field name={name}>
         {({ field, form }: any) => (
           <div>
             <DatePicker
               placeholderText='enter date'              
-              className="mt-[7px] focus:outline-[#2d90c6] border-[1px] border-[#a4a2a2] px-[10px] h-[40px] rounded text-[14px]"
+              className="mt-[7px] focus:outline-[#2d90c6] border-[1px] border-[#a4a2a2] px-[10px] h-[40px] rounded text-[14px] w-full"
+              wrapperClassName='sm:w-[200px] w-full'
               selected={field.value?.startDate}
               onChange={(dates: [Date | null, Date | null]) => {
                 if(onChange) {

@@ -7,7 +7,7 @@ export const GuardianGetSections = (): Promise<
   AxiosResponse<IGuardianNewsResponse>
 > => {
   return Http.get(
-    `https://content.guardianapis.com/sections?api-key=${
+    `${import.meta.env.VITE_GURADIAN_BASE_URL}/sections?api-key=${
       import.meta.env.VITE_GURADIAN_API_KEY
     }`
   );
