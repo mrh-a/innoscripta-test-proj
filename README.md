@@ -1,6 +1,9 @@
 
 # Innoscripta Test Project
 
+## Prerequisites
+- Make sure you have [Docker installed](https://docs.docker.com/get-docker/) on your machine.
+
 ## Setup Guide
 
 First, clone the project from GitHub:
