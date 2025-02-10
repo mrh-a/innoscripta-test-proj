@@ -1,9 +1,10 @@
-```markdown
+
 # Innoscripta Test Project
 
 ## Setup Guide
 
 First, clone the project from GitHub:
+
 ```bash
 git clone https://github.com/mrh-a/innoscripta-test-proj.git
 ```
