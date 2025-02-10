@@ -2,7 +2,7 @@ const SavedSearchItemWithRemove: React.FC<any> = ({
   data,
   innerRef,
   innerProps,
-  onItemDelete
+  onItemDelete,
 }) => {
   return (
     <div

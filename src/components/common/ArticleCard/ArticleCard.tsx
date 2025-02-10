@@ -25,7 +25,7 @@ const ArticleCard: FC<IArticleCard> = ({
   const publishedAt = new Date(date);
 
   return (
-    <div className="max-w-sm bg-white border border-gray-200 rounded-lg">
+    <div className="sm:max-w-sm w-[100%] bg-white border border-gray-200 rounded-lg">
       <Link to={href} target="_blank" aria-label={`Read article: ${title}`}>
         <img
           fetchPriority="high"
@@ -37,7 +37,9 @@ const ArticleCard: FC<IArticleCard> = ({
       <div className="p-5">
         <div className="flex justify-between">
           {publishedAt && (
-            <span className="block text-[12px]">{publishedAt.toDateString()}</span>
+            <span className="block text-[12px]">
+              {publishedAt.toDateString()}
+            </span>
           )}
           {source && <span className="block text-[12px]">{source}</span>}
           {category && <span className="block text-[12px]">{category}</span>}

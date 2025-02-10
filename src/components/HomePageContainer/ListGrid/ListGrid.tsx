@@ -12,7 +12,6 @@ const sourcesOption: IOption[] = [];
 interface IListGrid {}
 
 const ListGrid: FC<IListGrid> = () => {
-
   const location = useLocation();
   const { dataSource, search, dateRange, category, sourceId } =
     useSearchQueryParams(location.search, sourcesOption);
@@ -34,7 +33,6 @@ const ListGrid: FC<IListGrid> = () => {
     refetch();
   }, [currentPage, dataSource, search, dateRange, category, sourceId, refetch]);
 
-
   let totalPages = 0;
 
   if (data?.totalResults && !isLoading) {
@@ -44,8 +42,7 @@ const ListGrid: FC<IListGrid> = () => {
   const navigate = useNavigate();
   const searchParams = location.search;
 
-  const onPageChange = (selected: number) => {
-    console.log("--nav");
+  const onPageChange = (selected: any) => {
     navigate(`/pages/${selected}${searchParams}`);
   };
 
@@ -57,7 +54,7 @@ const ListGrid: FC<IListGrid> = () => {
         </>
       ) : (
         <>
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-[20px]">
+          <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-[20px]">
             {data.articles &&
               data.articles.map((article) => (
                 <ArticleCard

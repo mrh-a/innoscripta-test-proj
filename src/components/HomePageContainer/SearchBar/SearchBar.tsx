@@ -1,6 +1,6 @@
 import { Form, Formik } from "formik";
 import { FC, useEffect, useMemo, useState } from "react";
-import TextInput  from "../../common/TextInput/TextInput";
+import TextInput from "../../common/TextInput/TextInput";
 import Button from "../../common/Button/Button";
 import DateRangePicker from "../../common/RangeDatePicker/RangeDatePicker";
 import SelectOption from "../../common/SelectOption/SelectOption";
@@ -11,7 +11,13 @@ import { dataSources } from "../../../core/data/data-sources.data";
 import { useNavigate } from "react-router";
 import useSearchQueryParams from "../../../core/hooks/use-search-query-params.hook";
 import { IInitialSearchValues } from "../../../core/model/initial-search-values.model";
-import { generateSearchQueryParams, getSourceSelectOptionLabel, getSourceSelectOptions, removeFilter, saveFilter } from "../../../core/utils/helpers.util";
+import {
+  generateSearchQueryParams,
+  getSourceSelectOptionLabel,
+  getSourceSelectOptions,
+  removeFilter,
+  saveFilter,
+} from "../../../core/utils/helpers.util";
 import { EDataSouces } from "../../../core/enums/data-sources.enum";
 import { IOption } from "../../../core/model/option.model";
 import SavedSearchItemWithRemove from "./SavedSearchItemWithRemove/SavedSearchItemWithRemove";
@@ -23,8 +29,7 @@ import { nyTimesSections } from "../../../core/data/nytimes-sections.data";
 interface ISearchBar {}
 
 const SearchBar: FC<ISearchBar> = ({}) => {
-  
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const [savedFilters, setSavedFilters] = useState<IOption[]>([]);
   const [initialValues, setInitialValues] = useState<IInitialSearchValues>({
@@ -38,6 +43,7 @@ const SearchBar: FC<ISearchBar> = ({}) => {
   const { isLoading, data } = useNewsAPIGetSources();
   const { data: sectionsData } = useGuardianGetSections();
 
+  // Normalizing the data for Select option
   const normalizeSourcesOptions = useMemo(() => {
     if (data && data.data.status === "ok") {
       const newSource = data.data.sources.map((data: INewsSource) => ({
@@ -50,6 +56,7 @@ const SearchBar: FC<ISearchBar> = ({}) => {
     return [];
   }, [data]);
 
+  // Normalizing the data for Select option
   const normalizeSectionsOptions = useMemo(() => {
     if (sectionsData && sectionsData.data.response.status === "ok") {
       const newSource = sectionsData.data.response.results.map(
@@ -64,8 +71,6 @@ const SearchBar: FC<ISearchBar> = ({}) => {
     return [];
   }, [sectionsData]);
 
-
-  console.log("--normalizeSectionsOptions--", normalizeSectionsOptions);
   const { dataSource, search, dateRange, category, sources } =
     useSearchQueryParams(
       location.search,
@@ -74,6 +79,8 @@ const SearchBar: FC<ISearchBar> = ({}) => {
     );
 
   useEffect(() => {
+
+    //Reading the states from query parameters
     setInitialValues({
       dataSource,
       search,
@@ -87,9 +94,11 @@ const SearchBar: FC<ISearchBar> = ({}) => {
     let queryParams = new URLSearchParams();
     queryParams = generateSearchQueryParams(queryParams, values);
     navigate(`/?${queryParams.toString()}`);
-  }; 
+  };
 
   useEffect(() => {
+
+    // Loading the stored filters from local storage
     const savedFiltersStr = localStorage.getItem("savedFilters");
     if (savedFiltersStr) {
       setSavedFilters(JSON.parse(savedFiltersStr));
@@ -119,13 +128,14 @@ const SearchBar: FC<ISearchBar> = ({}) => {
                 label="Data Source"
                 options={dataSources}
                 onChange={() => setFieldValue("sources", null)}
+                className="w-full"
                 isClearable={false}
               />
               <TextInput
                 name="search"
                 label="Search"
                 placeholder="search ..."
-                inputClassName="min-w-[450px]"
+                containerClassName="sm:w-[450px]"
               />
               <DateRangePicker label="Date" name="dateRange" />
               {values["dataSource"].value === EDataSouces.NEWS_API_ORG && (
@@ -169,7 +179,7 @@ const SearchBar: FC<ISearchBar> = ({}) => {
                 isClearable
               />
               <Button
-                className="mt-[29px]"
+                className="sm:mt-[29px] mt-[0px]"
                 label="Search"
                 ariaLabel="Submit Search Form"
               />
@@ -180,7 +190,7 @@ const SearchBar: FC<ISearchBar> = ({}) => {
                 placeholder="select ..."
                 name="savedSearch"
                 label="Saved Search"
-                className="min-w-[350px]"
+                containerClassName="min-w-[350px]"
                 onChange={(opt: IOption) => {
                   handleSavedSearchChange(opt);
                 }}
@@ -196,7 +206,7 @@ const SearchBar: FC<ISearchBar> = ({}) => {
               />
               <Button
                 type="button"
-                className="mt-[29px]"
+                className="sm:mt-[29px] mt-[0px]"
                 label="Save Search"
                 ariaLabel="Save current filters"
                 onClick={() => {
@@ -212,6 +222,6 @@ const SearchBar: FC<ISearchBar> = ({}) => {
       </Formik>
     </section>
   );
-}
+};
 
 export default SearchBar;
