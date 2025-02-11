@@ -14,7 +14,7 @@ git clone https://github.com/mrh-a/innoscripta-test-proj.git
 ```
 
 Then you need to make sure you have the correct environment variables:
-- Make a copy of `.env.example` and rename it to `.env`
+-In the "master" branch, make a copy of `.env.example` and rename it to `.env`
 - Edit the `.env` as below:
   ```dotenv
   VITE_NEWS_API_ORG_API_KEY=429d8ab2220149e299d98d62d9605c4f
